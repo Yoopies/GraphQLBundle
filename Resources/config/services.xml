@@ -12,6 +12,7 @@
 
     <services>
         <service id="graphql.schema" synthetic="true" public="true"/>
+        <defaults autowire="true" autoconfigure="true"/>
 
         <service id="graphql.processor" class="%graphql.processor.class%" public="true">
             <argument type="service" id="graphql.execution_context" />
