@@ -53,5 +53,16 @@
         <service id="graphql.command.configure" class="Youshido\GraphQLBundle\Command\GraphQLConfigureCommand">
             <tag name="console.command" command="graphql:configure"/>
         </service>
+
+        <service id="Youshido\GraphQLBundle\Controller\GraphQLController" public="true">
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="parameter_bag"/>
+            <argument type="service" id="service_container"/>
+            <tag name="controller.service_arguments"/>
+        </service>
+
+        <service id="Youshido\GraphQLBundle\Controller\GraphQLExplorerController" public="true">
+            <tag name="controller.service_arguments"/>
+        </service>
     </services>
 </container>

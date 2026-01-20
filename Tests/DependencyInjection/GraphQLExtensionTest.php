@@ -4,14 +4,14 @@ namespace Youshido\GraphQLBundle\Tests\DependencyInjection;
 
 
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Compiler\ResolveDefinitionTemplatesPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use PHPUnit\Framework\TestCase;
 use Youshido\GraphQLBundle\DependencyInjection\GraphQLExtension;
 
-class GraphQLExtensionTest extends \PHPUnit_Framework_TestCase
+class GraphQLExtensionTest extends TestCase
 {
     public function testDefaultConfigIsUsed()
     {
@@ -92,9 +92,6 @@ class GraphQLExtensionTest extends \PHPUnit_Framework_TestCase
         }
 
         $loader->load($file.'.'.$type);
-        $container->getCompilerPassConfig()->setOptimizationPasses(array(
-            new ResolveDefinitionTemplatesPass(),
-        ));
         $container->getCompilerPassConfig()->setRemovingPasses(array());
         $container->compile();
         return $container;
