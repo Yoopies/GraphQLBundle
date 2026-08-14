@@ -13,10 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class GraphQLExplorerController extends AbstractController
 {
     /**
-     * @Route("/graphql/explorer")
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
+    #[Route('/graphql/explorer')]
     public function explorerAction()
     {
         $response = $this->render('@GraphQLBundle/Feature/explorer.html.twig', [

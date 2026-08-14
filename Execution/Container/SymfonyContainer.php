@@ -9,9 +9,9 @@
 namespace Youshido\GraphQLBundle\Execution\Container;
 
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Youshido\GraphQL\Execution\Container\ContainerInterface;
+use Youshido\GraphQLBundle\DependencyInjection\ContainerAwareInterface;
+use Youshido\GraphQLBundle\DependencyInjection\ContainerAwareTrait;
 
 class SymfonyContainer implements ContainerInterface, ContainerAwareInterface
 {

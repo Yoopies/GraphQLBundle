@@ -25,7 +25,7 @@ class GraphQLConfigureCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('graphql:configure')
@@ -40,12 +40,12 @@ class GraphQLConfigureCommand extends Command
     {
         $isComposerCall = $input->getOption('composer');
 
-        $rootDir = $this->container->getParameter('kernel.root_dir');
-        $configFile = $rootDir . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config/packages/graphql.yml';
+        $projectDir = $this->container->getParameter('kernel.project_dir');
+        $configFile = $projectDir . DIRECTORY_SEPARATOR . 'config/packages/graphql.yml';
 
         $className       = 'Schema';
         $schemaNamespace = self::PROJECT_NAMESPACE . '\\GraphQL';
-        $graphqlPath     = rtrim($rootDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'GraphQL';
+        $graphqlPath     = $projectDir . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'GraphQL';
         $classPath       = $graphqlPath . DIRECTORY_SEPARATOR . $className . '.php';
 
         $inputHelper = $this->getHelper('question');

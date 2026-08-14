@@ -8,12 +8,12 @@
 namespace Youshido\GraphQLBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
+use Youshido\GraphQLBundle\DependencyInjection\ContainerAwareInterface;
 use Youshido\GraphQLBundle\Exception\UnableToInitializeSchemaServiceException;
 use Youshido\GraphQLBundle\Execution\Processor;
 
@@ -30,12 +30,11 @@ class GraphQLController extends AbstractController
         $this->serviceContainer = $serviceContainer;
     }
     /**
-     * @Route("/graphql")
-     *
      * @throws \Exception
      *
      * @return JsonResponse
      */
+    #[Route('/graphql')]
     public function defaultAction()
     {
         try {
@@ -177,7 +176,10 @@ class GraphQLController extends AbstractController
         }
 
         $schema = new $schemaClass();
-        if ($schema instanceof ContainerAwareInterface) {
+        // Also support the legacy Symfony interface (removed in Symfony 7.0)
+        if ($schema instanceof ContainerAwareInterface
+            || in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($schema), true)
+        ) {
             $schema->setContainer($this->serviceContainer);
         }
 

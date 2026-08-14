@@ -19,7 +19,7 @@ class GraphQLExtension extends Extension
     /**
      * {@inheritdoc}
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $this->config  = $this->processConfiguration($configuration, $configs);
@@ -58,7 +58,7 @@ class GraphQLExtension extends Extension
         ];
     }
 
-    public function getAlias()
+    public function getAlias(): string
     {
         return "graphql";
     }
