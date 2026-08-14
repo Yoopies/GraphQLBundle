@@ -12,6 +12,7 @@
 
     <services>
         <service id="graphql.schema" synthetic="true" public="true"/>
+        <defaults autowire="true" autoconfigure="true"/>
 
         <service id="graphql.processor" class="%graphql.processor.class%" public="true">
             <argument type="service" id="graphql.execution_context" />
@@ -22,9 +23,7 @@
             </call>
         </service>
 
-        <service id="graphql.event_dispatcher" class="Symfony\Component\EventDispatcher\EventDispatcher">
-            <argument type="service" id="service_container" />
-        </service>
+        <service id="graphql.event_dispatcher" class="Symfony\Component\EventDispatcher\EventDispatcher" />
 
         <service id="graphql.execution_context" class="%graphql.execution_context.class%">
             <argument type="service" id="graphql.schema" />
@@ -51,6 +50,17 @@
 
         <service id="graphql.command.configure" class="Youshido\GraphQLBundle\Command\GraphQLConfigureCommand">
             <tag name="console.command" command="graphql:configure"/>
+        </service>
+
+        <service id="Youshido\GraphQLBundle\Controller\GraphQLController" public="true">
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="parameter_bag"/>
+            <argument type="service" id="service_container"/>
+            <tag name="controller.service_arguments"/>
+        </service>
+
+        <service id="Youshido\GraphQLBundle\Controller\GraphQLExplorerController" public="true">
+            <tag name="controller.service_arguments"/>
         </service>
     </services>
 </container>

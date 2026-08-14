@@ -14,7 +14,7 @@ use Youshido\GraphQL\Validator\ConfigValidator\Rules\TypeValidationRule as BaseT
 class TypeValidationRule extends BaseTypeValidationRule
 {
 
-    public function validate($data, $ruleInfo)
+    public function validate($data, $ruleInfo): bool
     {
         if (!is_string($ruleInfo)) {
             return false;

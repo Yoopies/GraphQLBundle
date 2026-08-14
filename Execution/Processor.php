@@ -3,8 +3,6 @@
 namespace Youshido\GraphQLBundle\Execution;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\HttpKernel\Kernel;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
@@ -17,6 +15,7 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Exception\ResolveException;
+use Youshido\GraphQLBundle\DependencyInjection\ContainerAwareInterface;
 use Youshido\GraphQLBundle\Event\ResolveEvent;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -59,16 +58,16 @@ class Processor extends BaseProcessor
         return $this;
     }
 
-    public function processPayload($payload, $variables = [], $reducers = [])
+    public function processPayload($payload, $variables = [], array $reducers = []): static
     {
         if ($this->logger) {
             $this->logger->debug(sprintf('GraphQL query: %s', $payload), (array)$variables);
         }
 
-        parent::processPayload($payload, $variables);
+        return parent::processPayload($payload, $variables);
     }
 
-    protected function resolveQuery(Query $query)
+    protected function resolveQuery(Query $query): array
     {
         $this->assertClientHasOperationAccess($query);
 
@@ -76,17 +75,10 @@ class Processor extends BaseProcessor
     }
 
     private function dispatchResolveEvent(ResolveEvent $event, $name){
-        $major = Kernel::MAJOR_VERSION;
-        $minor = Kernel::MINOR_VERSION;
-
-        if($major > 4 || ($major === 4 && $minor >= 3)){
-            $this->eventDispatcher->dispatch($event, $name);
-        }else{
-            $this->eventDispatcher->dispatch($name, $event);
-        }
+        $this->eventDispatcher->dispatch($event, $name);
     }
 
-    protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
+    protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null): mixed
     {
         /** @var AstQuery|AstField $ast */
         $arguments = $this->parseArgumentsValues($field, $ast);
@@ -98,7 +90,10 @@ class Processor extends BaseProcessor
         $resolveInfo = $this->createResolveInfo($field, $astFields);
         $this->assertClientHasFieldAccess($resolveInfo);
 
-        if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
+        // Also check the legacy Symfony interface (removed in Symfony 7.0) by name for BC
+        if ($field instanceof ContainerAwareInterface
+            || in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field), true)
+        ) {
             /** @var $field ContainerAwareInterface */
             $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
         }
@@ -153,7 +148,7 @@ class Processor extends BaseProcessor
 
     private function isServiceReference($resolveFunc)
     {
-        return is_array($resolveFunc) && count($resolveFunc) == 2 && strpos($resolveFunc[0], '@') === 0;
+        return is_array($resolveFunc) && count($resolveFunc) == 2 && is_string($resolveFunc[0]) && strpos($resolveFunc[0], '@') === 0;
     }
 
     public function setLogger($logger = null)

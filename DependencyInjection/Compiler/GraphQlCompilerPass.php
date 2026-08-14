@@ -22,7 +22,7 @@ class GraphQlCompilerPass implements CompilerPassInterface
      *
      * @throws \Exception
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if ($loggerAlias = $container->getParameter('graphql.logger')) {
             if (strpos($loggerAlias, '@') === 0) {

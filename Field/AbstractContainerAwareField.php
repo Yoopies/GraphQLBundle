@@ -8,9 +8,9 @@
 
 namespace Youshido\GraphQLBundle\Field;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Youshido\GraphQL\Field\AbstractField as BaseAbstractField;
+use Youshido\GraphQLBundle\DependencyInjection\ContainerAwareInterface;
+use Youshido\GraphQLBundle\DependencyInjection\ContainerAwareTrait;
 
 
 abstract class AbstractContainerAwareField extends BaseAbstractField implements ContainerAwareInterface

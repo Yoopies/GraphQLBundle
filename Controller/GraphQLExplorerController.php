@@ -7,17 +7,15 @@
 
 namespace Youshido\GraphQLBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
 
-class GraphQLExplorerController extends Controller
+class GraphQLExplorerController extends AbstractController
 {
     /**
-     * @Route("/graphql/explorer")
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
+    #[Route('/graphql/explorer')]
     public function explorerAction()
     {
         $response = $this->render('@GraphQLBundle/Feature/explorer.html.twig', [

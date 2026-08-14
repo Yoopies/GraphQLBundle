@@ -2,21 +2,30 @@
 
 namespace Youshido\GraphQLBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class GraphQLConfigureCommand extends ContainerAwareCommand
+class GraphQLConfigureCommand extends Command
 {
     const PROJECT_NAMESPACE = 'App';
+
+    private ContainerInterface $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
 
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('graphql:configure')
@@ -27,17 +36,16 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $isComposerCall = $input->getOption('composer');
 
-        $container  = $this->getContainer();
-        $rootDir    = $container->getParameter('kernel.root_dir');
-        $configFile = $rootDir . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config/packages/graphql.yml';
+        $projectDir = $this->container->getParameter('kernel.project_dir');
+        $configFile = $projectDir . DIRECTORY_SEPARATOR . 'config/packages/graphql.yml';
 
         $className       = 'Schema';
         $schemaNamespace = self::PROJECT_NAMESPACE . '\\GraphQL';
-        $graphqlPath     = rtrim($rootDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'GraphQL';
+        $graphqlPath     = $projectDir . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'GraphQL';
         $classPath       = $graphqlPath . DIRECTORY_SEPARATOR . $className . '.php';
 
         $inputHelper = $this->getHelper('question');
@@ -48,7 +56,7 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
         } else {
             $question = new ConfirmationQuestion(sprintf('Confirm creating class at %s ? [Y/n]', $schemaNamespace . '\\' . $className), true);
             if (!$inputHelper->ask($input, $output, $question)) {
-                return;
+                return Command::SUCCESS;
             }
 
             if (!is_dir($graphqlPath)) {
@@ -62,7 +70,7 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
             if (!file_exists($configFile)) {
                 $question = new ConfirmationQuestion(sprintf('Config file not found (look at %s). Create it? [Y/n]', $configFile), true);
                 if (!$inputHelper->ask($input, $output, $question)) {
-                    return;
+                    return Command::SUCCESS;
                 }
 
                 touch($configFile);
@@ -96,6 +104,16 @@ CONFIG;
                 $output->writeln('GraphQL default route was found.');
             }
         }
+
+        return Command::SUCCESS;
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    protected function getContainer()
+    {
+        return $this->container;
     }
 
     /**
