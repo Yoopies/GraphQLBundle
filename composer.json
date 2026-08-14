@@ -20,7 +20,7 @@
   "require": {
     "php": ">=8.2",
     "ext-json": "*",
-    "youshido/graphql": "~1.4 || dev-upgrade/php8.2-symfony6",
+    "youshido/graphql": "^2.0",
     "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0",
     "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0",
     "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0",

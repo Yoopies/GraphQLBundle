@@ -5,7 +5,7 @@
 - `php`: `>=7.4` → `>=8.2`
 - `symfony/*`: `^4.4 || ^5.0` → `^5.4 || ^6.0 || ^7.0`
 - `phpunit/phpunit`: `^8.0 || ^9.0` → `^9.6`
-- `youshido/graphql`: requires the [Yoopies fork](https://github.com/Yoopies/GraphQL) with PHP 8.2 support (typed signatures)
+- `youshido/graphql`: `~1.4` → `^2.0` ([Yoopies fork](https://github.com/Yoopies/GraphQL) release with PHP 8.2 support and typed signatures)
 
 ## Behavior changes
 
