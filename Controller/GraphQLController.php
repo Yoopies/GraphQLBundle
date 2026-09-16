@@ -195,13 +195,13 @@ class GraphQLController extends AbstractController
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     private function getSchemaService()
     {
         $serviceName = $this->parameters->get('graphql.schema_service');
 
-        if (substr($serviceName, 0, 1) === '@') {
+        if (null !== $serviceName && substr($serviceName, 0, 1) === '@') {
             return substr($serviceName, 1, strlen($serviceName) - 1);
         }
 
