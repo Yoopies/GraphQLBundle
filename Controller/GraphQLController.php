@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Youshido\GraphQLBundle\DependencyInjection\ContainerAwareInterface;
 use Youshido\GraphQLBundle\Exception\UnableToInitializeSchemaServiceException;
@@ -51,7 +52,15 @@ class GraphQLController extends AbstractController
             return $this->createEmptyResponse();
         }
 
-        list($queries, $isMultiQueryRequest) = $this->getPayload();
+        try {
+            [$queries, $isMultiQueryRequest] = $this->getPayload();
+        } catch (BadRequestHttpException $e) {
+            return new JsonResponse(
+                ['errors' => [['message' => $e->getMessage()]]],
+                400,
+                $this->getResponseHeaders()
+            );
+        }
 
         $queryResponses = array_map(function($queryData) {
             return $this->executeQuery($queryData['query'], $queryData['variables']);
@@ -88,8 +97,8 @@ class GraphQLController extends AbstractController
     private function getPayload()
     {
         $request = $this->requestStack->getCurrentRequest();
-        $query = $request->get('query', null);
-        $variables = $request->get('variables', []);
+        $query = $request->query->get('query') ?? $request->request->get('query');
+        $variables = $request->query->get('variables') ?? $request->request->get('variables');
         $isMultiQueryRequest = false;
         $queries = [];
 
@@ -105,32 +114,39 @@ class GraphQLController extends AbstractController
             } else {
                 $params = json_decode($content, true);
 
-                if ($params) {
-                    // check for a list of queries
-                    if (isset($params[0]) === true) {
-                        $isMultiQueryRequest = true;
-                    } else {
-                        $params = [$params];
+                // Invalid JSON, scalar or empty payload: nothing to execute
+                if (!is_array($params) || [] === $params) {
+                    throw new BadRequestHttpException('Invalid GraphQL request payload.');
+                }
+
+                // check for a list of queries
+                if (isset($params[0]) === true) {
+                    $isMultiQueryRequest = true;
+                } else {
+                    $params = [$params];
+                }
+
+                foreach ($params as $queryParams) {
+                    if (!is_array($queryParams)) {
+                        throw new BadRequestHttpException('Invalid GraphQL request payload.');
                     }
 
-                    foreach ($params as $queryParams) {
-                        $query = isset($queryParams['query']) ? $queryParams['query'] : $query;
+                    $query = isset($queryParams['query']) ? $queryParams['query'] : $query;
 
-                        if (isset($queryParams['variables'])) {
-                            if (is_string($queryParams['variables'])) {
-                                $variables = json_decode($queryParams['variables'], true) ?: $variables;
-                            } else {
-                                $variables = $queryParams['variables'];
-                            }
-
-                            $variables = is_array($variables) ? $variables : [];
+                    if (isset($queryParams['variables'])) {
+                        if (is_string($queryParams['variables'])) {
+                            $variables = json_decode($queryParams['variables'], true) ?: $variables;
+                        } else {
+                            $variables = $queryParams['variables'];
                         }
 
-                        $queries[] = [
-                            'query' => $query,
-                            'variables' => $variables,
-                        ];
+                        $variables = is_array($variables) ? $variables : [];
                     }
+
+                    $queries[] = [
+                        'query' => $query,
+                        'variables' => $variables,
+                    ];
                 }
             }
         } else {
