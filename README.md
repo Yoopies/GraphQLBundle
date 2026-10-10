@@ -48,7 +48,7 @@ graphql:
 or 
 ```yaml
 graphql:
-    resource: "@GraphQLBundle/Resources/config/route.xml"
+    resource: "@GraphQLBundle/Resources/config/routes.yaml"
 ```
 If you don't have a web server configured you can use a bundled version, simply run `php bin/console server:run`.
 
