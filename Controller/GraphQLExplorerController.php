@@ -8,14 +8,14 @@
 namespace Youshido\GraphQLBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class GraphQLExplorerController extends AbstractController
 {
     /**
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    #[Route('/graphql/explorer')]
+    #[Route('/graphql/explorer', name: 'youshido_graphql_graphqlexplorer_explorer')]
     public function explorerAction()
     {
         $response = $this->render('@GraphQLBundle/Feature/explorer.html.twig', [

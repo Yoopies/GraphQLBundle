@@ -63,12 +63,9 @@ class GraphQLExtensionTest extends TestCase
 
     }
 
-    private function loadContainerFromFile($file, $type, array $services = array(), $skipEnvVars = false)
+    private function loadContainerFromFile($file, $type, array $services = array())
     {
         $container = new ContainerBuilder();
-        if ($skipEnvVars && !method_exists($container, 'resolveEnvPlaceholders')) {
-            $this->markTestSkipped('Runtime environment variables has been introduced in the Dependency Injection version 3.2.');
-        }
         $container->setParameter('kernel.debug', false);
         $container->setParameter('kernel.cache_dir', '/tmp');
         foreach ($services as $id => $service) {

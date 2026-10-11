@@ -1,0 +1,7 @@
+youshido_graphql_graphql_default:
+    path: /graphql
+    controller: Youshido\GraphQLBundle\Controller\GraphQLController::defaultAction
+
+youshido_graphql_graphqlexplorer_explorer:
+    path: /graphql/explorer
+    controller: Youshido\GraphQLBundle\Controller\GraphQLExplorerController::explorerAction

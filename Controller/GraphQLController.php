@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Youshido\GraphQLBundle\DependencyInjection\ContainerAwareInterface;
 use Youshido\GraphQLBundle\Exception\UnableToInitializeSchemaServiceException;
 use Youshido\GraphQLBundle\Execution\Processor;
@@ -35,7 +35,7 @@ class GraphQLController extends AbstractController
      *
      * @return JsonResponse
      */
-    #[Route('/graphql')]
+    #[Route('/graphql', name: 'youshido_graphql_graphql_default')]
     public function defaultAction()
     {
         try {
